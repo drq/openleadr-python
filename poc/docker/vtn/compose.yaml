@@ -1,5 +1,7 @@
 services:
   local:
     build: .
+    image: openadr/openadr_vtn
+    container_name: "openadr_vtn"
     ports:
       - "8080:8080"

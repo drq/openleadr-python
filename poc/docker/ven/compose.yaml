@@ -1,5 +1,7 @@
 services:
   local:
     build: .
+    image: openadr/openadr_ven
+    container_name: "openadr_ven"
     environment:
       VTN: "http://host.docker.internal:8080/OpenADR2/Simple/2.0b"

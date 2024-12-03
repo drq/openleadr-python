@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openadr_vtn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openadr_vtn
+  template:
+    metadata:
+      labels:
+        app: openadr_vtn
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+        - name: openadr_vtn
+          image: ghcr.io/azure-samples/openadr/openadr_vtn:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 1m
+              memory: 50Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openadr_vtn
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: openadr_vtn
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openadr_ven
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openadr_ven
+  template:
+    metadata:
+      labels:
+        app: openadr_ven
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      initContainers:
+        - name: openadr_vtn
+          image: ghcr.io/azure-samples/openadr/openadr_vtn:latest
+      containers:
+        - name: openadr_ven
+          image: ghcr.io/azure-samples/openadr/openadr_ven:latest
+          env:
+            - name: VTN
+              value: "http://application_gateway_public_ip/OpenADR2/Simple/2.0b"
+          resources:
+            requests:
+              cpu: 1m
+              memory: 6Mi
+            limits:
+              cpu: 5m
+              memory: 20Mi
