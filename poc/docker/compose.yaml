@@ -1,4 +1,10 @@
 services:
+  proxy:
+    build: ./proxy
+    image: openadr/openadr_proxy
+    container_name: "openadr_proxy"
+    ports:
+      - "80:80"
   vtn:
     build: ./vtn
     image: openadr/openadr_vtn
@@ -10,6 +16,7 @@ services:
     image: openadr/openadr_ven
     container_name: "openadr_ven"
     depends_on:
+      - proxy
       - vtn
     environment:
-      VTN: "http://host.docker.internal:8080/OpenADR2/Simple/2.0b"
+      VTN: "http://host.docker.internal/OpenADR2/Simple/2.0b"
